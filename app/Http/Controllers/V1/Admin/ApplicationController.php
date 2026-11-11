@@ -56,8 +56,8 @@ class ApplicationController extends Controller
 				'credentials' => $generatedCredentials->map(
 					fn ($credential) => [
 						'name' => $credential['name'],
-						'key' => $credential['key_prefix'],
-						'secret' => $credential['secret'],
+						'key_prefix' => $credential['key_prefix'],
+						'secret' =>  ['secret'],
 					]
 				),
 			],
@@ -78,7 +78,7 @@ class ApplicationController extends Controller
 
 		$application->update($request->validated());
 
-		return response("Application Updated Successfully");
+		return response()->success("Application Updated Successfully");
 	}
 
 	public function destroy(Application $application)

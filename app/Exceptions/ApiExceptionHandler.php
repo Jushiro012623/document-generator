@@ -174,7 +174,9 @@ class ApiExceptionHandler
 				}
 
 				return response()->fail(
-					'A database operation failed while processing the request.',
+					app()->isProduction()
+						? "An unexpected error occurred while processing the request."
+						: 'A database operation failed while processing the request.',
 					$extensions,
 					HttpResponse::HTTP_INTERNAL_SERVER_ERROR
 				);

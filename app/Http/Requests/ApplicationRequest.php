@@ -23,7 +23,7 @@ class ApplicationRequest extends FormRequest
 				'distinct',
 				Rule::in(array_column(ApplicationPermission::cases(), 'value')),
 			],
-			'permissions.*.description' => ['required', 'string'],
+			'permissions.*.description' => ['nullable', 'string'],
 
 			'credentials' => ['sometimes', 'array'],
 			'credentials.*' => ['required', 'array'],

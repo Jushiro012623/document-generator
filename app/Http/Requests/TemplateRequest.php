@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Context\AppContext;
 use App\Traits\UpdateRequestTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -12,14 +13,21 @@ class TemplateRequest extends FormRequest
 
 	public function rules(): array
 	{
+		$applicationId = $this->route('application')?->id ?? app(AppContext::class)->app->id;
+
+		$templateId = $this->route('template');
 
 		return [
 			'name' => [$this->isRequired(), 'string'],
-			'slug' => [$this->isRequired(), 'string', Rule::unique('templates', 'slug')
-				->where('application_id', $this->input('application_id')),],
+			'slug' => [
+				$this->isRequired(),
+				'string',
+				Rule::unique('templates', 'slug')
+					->where('application_id', $applicationId)
+					->ignore($templateId),
+			],
 			'description' => ['nullable', 'string'],
 			'status' => ['nullable', 'string'],
-			'application_id' => ['sometimes', 'exists:applications,id', 'integer']
 		];
 	}
 

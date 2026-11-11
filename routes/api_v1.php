@@ -1,11 +1,9 @@
 <?php
 
+use App\Http\Controllers\ApplicationPermissionsController;
 use App\Http\Controllers\V1\Admin\ApplicationController;
 use App\Http\Controllers\V1\Admin\ApplicationCredentialsController;
-use App\Http\Controllers\V1\Admin\DocumentController;
-use App\Http\Controllers\V1\Admin\TemplateController;
-use App\Http\Controllers\V1\User\ApplicationTemplateController;
-use App\Http\Controllers\V1\User\DocumentGenerationController;
+use App\Http\Controllers\V1\Admin\ApplicationTemplateController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -15,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->group(function () {
 	Route::apiResource('applications', ApplicationController::class);
 	Route::apiResource('applications/{application}/credentials', ApplicationCredentialsController::class);
+	Route::apiResource('applications/{application}/permissions', ApplicationPermissionsController::class);
+	Route::apiResource('applications/{application}/templates', ApplicationTemplateController::class);
 });
 
 
