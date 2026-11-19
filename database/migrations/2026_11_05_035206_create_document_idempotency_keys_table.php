@@ -13,7 +13,7 @@ return new class extends Migration {
 			$table->string('idempotency_key');
 			$table->string('request_hash', 64);
 			$table->foreignId('document_id')->constrained('documents');
-			$table->timestamp('expires_at');
+			$table->timestamp('expires_at')->nullable();
 			$table->timestamps();
 			$table->softDeletes();
 

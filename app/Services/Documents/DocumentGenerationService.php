@@ -28,8 +28,7 @@ readonly class DocumentGenerationService
 			->whereKey($payload['template_id'])
 			->whereStatus(TemplateStatus::ACTIVE)
 			->firstOrFail();
-
-		$versionQuery = $template->templateVersions();
+		$versionQuery = $template->versions();
 
 		if (!empty($payload['template_version_id'])) {
 			$versionQuery->whereKey($payload['template_version_id']);
@@ -39,6 +38,7 @@ readonly class DocumentGenerationService
 			->whereStatus(TemplateVersionStatus::PUBLISHED)
 			->orderByDesc('version')
 			->firstOrFail();
+
 
 		$data = $payload['data'] ?? [];
 

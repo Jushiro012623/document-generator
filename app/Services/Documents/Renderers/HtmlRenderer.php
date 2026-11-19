@@ -15,9 +15,9 @@ class HtmlRenderer implements DocumentRendererInterface
 	{
 	}
 
-	public function render(TemplateVersion $version, array $data, DocumentFormat $outputFormat): string
+	public function render(TemplateVersion $version, array $data, DocumentFormat $format): string
 	{
-		if ($outputFormat !== DocumentFormat::PDF) {
+		if ($format !== DocumentFormat::PDF) {
 			throw new RuntimeException('HTML templates currently support PDF output only.'
 			);
 		}

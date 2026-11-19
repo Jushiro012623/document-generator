@@ -19,9 +19,7 @@ readonly class GenerateDocumentAction
 
 	public function execute(Document $document): void
 	{
-		$attemptNumber = (
-				$document->documentGenerationAttempts()->max('attempt_number') ?? 0
-			) + 1;
+		$attemptNumber = ($document->documentGenerationAttempts()->max('attempt_number') ?? 0) + 1;
 
 		$attempt = $document->documentGenerationAttempts()->create([
 			'attempt_number' => $attemptNumber,
@@ -62,26 +60,16 @@ readonly class GenerateDocumentAction
 
 			$extension = strtolower($document->format->value);
 
-			$filename = $document->filename
-				?: $document->reference . '.' . $extension;
+			$filename = $document->filename ?: $document->reference . '.' . $extension;
 
-			$storagePath = sprintf(
-				'documents/%s/%s',
-				$document->application_id,
-				$filename
-			);
+			$storagePath = sprintf('documents/%s/%s', $document->application_id, $filename);
 
-			$disk = Storage::disk(
-				config('document-generation.document_disk')
-			);
+			$disk = Storage::disk(config('document-generation.document_disk'));
 
 			$stream = fopen($temporaryPath, 'rb');
 
 			try {
-				$stored = $disk->put(
-					$storagePath,
-					$stream
-				);
+				$stored = $disk->put($storagePath, $stream);
 			} finally {
 				if (is_resource($stream)) {
 					fclose($stream);
@@ -101,9 +89,7 @@ readonly class GenerateDocumentAction
 				default => 'application/octet-stream',
 			};
 
-			$duration = (int)(
-			now()->diffInMilliseconds($attempt->started_at)
-			);
+			$duration = (int)(now()->diffInMilliseconds($attempt->started_at));
 
 			$document->update([
 				'filename' => $filename,

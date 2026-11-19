@@ -7,6 +7,8 @@ use App\Models\TemplateVersion;
 use App\Services\Documents\Contracts\DocumentRendererInterface;
 use App\Services\Documents\GotenbergService;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpWord\Exception\CopyFileException;
+use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
 use PhpOffice\PhpWord\TemplateProcessor;
 use RuntimeException;
 
@@ -16,7 +18,11 @@ class DocxRenderer implements DocumentRendererInterface
 	{
 	}
 
-	public function render(TemplateVersion $version, array $data, DocumentFormat $outputFormat): string
+	/**
+	 * @throws CopyFileException
+	 * @throws CreateTemporaryFileException
+	 */
+	public function render(TemplateVersion $version, array $data, DocumentFormat $format): string
 	{
 		if (!$version->storage_path) {
 			throw new RuntimeException('DOCX template file is missing.');
@@ -46,11 +52,11 @@ class DocxRenderer implements DocumentRendererInterface
 
 			$processor->saveAs($output);
 
-			if ($outputFormat === DocumentFormat::DOCX) {
+			if ($format === DocumentFormat::DOCX) {
 				return $output;
 			}
 
-			if ($outputFormat === DocumentFormat::PDF) {
+			if ($format === DocumentFormat::PDF) {
 				return $this->gotenberg->convertOfficeToPdf($output);
 			}
 

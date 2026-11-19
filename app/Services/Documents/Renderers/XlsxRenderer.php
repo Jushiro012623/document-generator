@@ -17,7 +17,7 @@ class XlsxRenderer implements DocumentRendererInterface
 	{
 	}
 
-	public function render(TemplateVersion $version, array $data, DocumentFormat $outputFormat): string
+	public function render(TemplateVersion $version, array $data, DocumentFormat $format): string
 	{
 		if (!$version->storage_path) {
 			throw new RuntimeException('XLSX template file is missing.');
@@ -57,7 +57,7 @@ class XlsxRenderer implements DocumentRendererInterface
 						}
 
 						$replaced = preg_replace_callback(
-							'/\$\{([a-zA-Z0-9_.-]+)\}/',
+							'/\{\{\s*([a-zA-Z0-9_.-]+)\s*\}\}/',
 							function ($matches) use ($values) {
 								return $values[$matches[1]] ?? $matches[0];
 							},
@@ -77,11 +77,11 @@ class XlsxRenderer implements DocumentRendererInterface
 
 			$spreadsheet->disconnectWorksheets();
 
-			if ($outputFormat === DocumentFormat::XLSX) {
+			if ($format === DocumentFormat::XLSX) {
 				return $output;
 			}
 
-			if ($outputFormat === DocumentFormat::PDF) {
+			if ($format === DocumentFormat::PDF) {
 				return $this->gotenberg->convertOfficeToPdf($output);
 			}
 

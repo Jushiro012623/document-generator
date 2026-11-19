@@ -26,19 +26,19 @@ class ApplicationTemplateController extends Controller
 		return response()->success('Template created successfully.', $template, Response::HTTP_CREATED);
 	}
 
-	public function show(string $template, Application $application)
+	public function show(Application $application, string $template)
 	{
 		$template = TemplateResource::make($application->templates()->findOrFail($template));
 		return response()->success('Template Retrieved Successfully', $template);
 	}
 
-	public function update(TemplateRequest $request, string $template, Application $application)
+	public function update(TemplateRequest $request, Application $application, string $template)
 	{
 		$application->templates()->findOrFail($template)->update($request->validated());
 		return response()->success("Template Updated Successfully");
 	}
 
-	public function destroy(string $template, Application $application)
+	public function destroy(Application $application, string $template)
 	{
 		$application->templates()->findOrFail($template)->delete();
 		return response()->success("Template Deleted Successfully", httpStatus: Response::HTTP_NO_CONTENT);

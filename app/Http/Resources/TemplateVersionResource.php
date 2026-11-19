@@ -26,9 +26,6 @@ class TemplateVersionResource extends JsonResource
 			'created_at' => $this->created_at,
 			'updated_at' => $this->updated_at,
 
-			'template_id' => $this->template_id,
-
-			'template' => new TemplateResource($this->whenLoaded('template')),
 		];
 	}
 }

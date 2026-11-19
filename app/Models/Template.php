@@ -33,7 +33,7 @@ class Template extends Model
 		return $this->belongsTo(Application::class);
 	}
 
-	public function templateVersions(): HasMany
+	public function versions(): HasMany
 	{
 		return $this->hasMany(TemplateVersion::class);
 	}

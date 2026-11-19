@@ -2,24 +2,30 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TemplateFormat;
+use App\Traits\UpdateRequestTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TemplateVersionRequest extends FormRequest
 {
+	use UpdateRequestTrait;
 	public function rules(): array
 	{
 		return [
-			'template_id' => ['required', 'exists:templates'],
-			'version' => ['required', 'integer'],
-			'format' => ['required'],
-			'status' => ['required'],
-			'content' => ['required'],
-			'styles' => ['required'],
-			'storage_path' => ['required'],
-			'data_schema' => ['required'],
-			'sample_data' => ['required'],
-			'page_settings' => ['required'],
-			'published_at' => ['required', 'date'],
+			'file' => ['nullable'],
+			'format' => [
+				$this->isRequired(),
+				'string',
+				'distinct',
+				Rule::in(array_column(TemplateFormat::cases(), 'value')),
+			],
+			'content' => ['nullable', 'string'],
+			'styles' => ['nullable', 'string'],
+			'storage_path' => ['nullable', 'string'],
+			'data_schema' => ['nullable', 'array'],
+			'sample_data' => ['nullable', 'array'],
+			'page_settings' => ['nullable', 'array'],
 		];
 	}
 

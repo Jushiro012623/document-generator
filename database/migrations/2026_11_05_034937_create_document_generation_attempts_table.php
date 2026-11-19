@@ -13,10 +13,10 @@ return new class extends Migration {
 			$table->foreignId('document_id')->constrained('documents')->cascadeOnDelete();
 			$table->integer('attempt_number');
 			$table->enum('status', array_column(DocumentStatus::cases(), 'value'))->default(DocumentStatus::PENDING->value);
-			$table->text('error_message');
-			$table->timestamp('started_at');
-			$table->timestamp('completed_at');
-			$table->bigInteger('duration_ms');
+			$table->text('error_message')->nullable();
+			$table->timestamp('started_at')->nullable();
+			$table->timestamp('completed_at')->nullable();
+			$table->bigInteger('duration_ms')->nullable();
 			$table->timestamps();
 			$table->softDeletes();
 

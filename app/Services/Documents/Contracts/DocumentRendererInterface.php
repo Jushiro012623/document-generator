@@ -8,9 +8,5 @@ use App\Models\TemplateVersion;
 interface
 DocumentRendererInterface
 {
-	public function render(
-		TemplateVersion $version,
-		array $data,
-		DocumentFormat $format,
-	): string;
+	public function render(TemplateVersion $version, array $data, DocumentFormat $format): string;
 }
