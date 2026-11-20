@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1\Admin;
 
-use App\Context\AppContext;
 use App\Enums\DocumentStatus;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\DocumentGenerationRequest;
 use App\Models\Application;
-use App\Models\Document;
 use App\Services\Documents\DocumentGenerationService;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;

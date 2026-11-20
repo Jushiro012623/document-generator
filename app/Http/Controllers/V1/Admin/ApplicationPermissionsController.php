@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ApplicationPermissionRequest;
 use App\Http\Resources\ApplicationPermissionResource;
 use App\Models\Application;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApplicationPermissionsController extends Controller
