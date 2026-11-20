@@ -25,6 +25,7 @@ class AdminDocumentGenerationController extends Controller
 	public function store(DocumentGenerationRequest $request, Application $application)
 	{
 		$document = $this->service->generate($application, $request->validated());
+		
 		$isCompleted = $document->status === DocumentStatus::COMPLETED;
 
 		return response()->success(
@@ -38,13 +39,7 @@ class AdminDocumentGenerationController extends Controller
 
 	public function download(Application $application, string $document)
 	{
-		$document = $application->document()->findOrFail($document);
-
-		if (!$document->status == DocumentStatus::COMPLETED) {
-			throw new ConflictHttpException("Document is not ready for download.");
-		}
-
-		$url = Storage::disk($document->storage_disk)->temporaryUrl($document->storage_path, now()->addMinutes(10));
+		$url = $this->service->download($application, $document);
 
 		return response()->success(
 			message: "Document downloaded successfully.",

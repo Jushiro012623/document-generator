@@ -28,11 +28,14 @@ class DocumentGenerationController extends Controller
 	/**
 	 * @throws \Throwable
 	 */
-	public function store(DocumentGenerationRequest $request, AppContext $context)
+	public function store(DocumentGenerationRequest $request, AppContext $appContext)
 	{
-		Gate::authorize('document-generator', [$context->app, ApplicationPermission::DOCUMENT_GENERATE->value]);
+		Gate::authorize('document-generator', [
+			$appContext->app,
+			ApplicationPermission::DOCUMENT_GENERATE->value
+		]);
 
-		$document = $this->service->generate($context->app, $request->validated());
+		$document = $this->service->generate($appContext->app, $request->validated());
 		$isCompleted = $document->status === DocumentStatus::COMPLETED;
 
 		return response()->success(
@@ -44,13 +47,14 @@ class DocumentGenerationController extends Controller
 			httpStatus: $isCompleted ? Response::HTTP_OK : Response::HTTP_ACCEPTED);
 	}
 
-	public function download(Document $document)
+	public function download(AppContext $appContext, Document $document)
 	{
-		if (!$document->status == DocumentStatus::COMPLETED) {
-			throw new ConflictHttpException("Document is not ready for download.");
-		}
+		Gate::authorize('document-generator', [
+			$appContext->app,
+			ApplicationPermission::DOCUMENT_DOWNLOAD->value
+		]);
 
-		$url = Storage::disk($document->storage_disk)->temporaryUrl($document->storage_path, now()->addMinutes(10));
+		$url = $this->service->download($appContext->app, $document);
 
 		return response()->success(
 			message: "Document downloaded successfully.",

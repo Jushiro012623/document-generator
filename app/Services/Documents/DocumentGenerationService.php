@@ -10,7 +10,9 @@ use App\Jobs\GenerateDocumentJob;
 use App\Models\Application;
 use App\Models\Document;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Throwable;
 
 readonly class DocumentGenerationService
@@ -76,5 +78,17 @@ readonly class DocumentGenerationService
 		GenerateDocumentJob::dispatch($document->id)->onQueue('document-generation')->afterCommit();
 
 		return $document;
+	}
+
+	public function download(Application $application, string $document): string
+	{
+		$document = $application->document()->findOrFail($document);
+
+		if (!$document->status == DocumentStatus::COMPLETED) {
+			throw new ConflictHttpException("Document is not ready for download.");
+		}
+
+		return Storage::disk($document->storage_disk)->temporaryUrl($document->storage_path, now()->addMinutes(10));
+
 	}
 }

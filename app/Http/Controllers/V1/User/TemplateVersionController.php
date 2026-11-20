@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1\User;
 
 use App\Context\AppContext;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\TemplateVersionRequest;
 use App\Http\Resources\TemplateVersionResource;
 use App\Models\Template;
