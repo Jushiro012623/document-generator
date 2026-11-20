@@ -32,9 +32,7 @@ class DocumentGenerationController extends Controller
 	{
 		Gate::authorize('document-generator', [$context->app, ApplicationPermission::DOCUMENT_GENERATE->value]);
 
-		$validated = $request->validated();
-
-		$document = $this->service->generate($context->app, $validated);
+		$document = $this->service->generate($context->app, $request->validated());
 		$isCompleted = $document->status === DocumentStatus::COMPLETED;
 
 		return response()->success(
@@ -43,7 +41,7 @@ class DocumentGenerationController extends Controller
 				'id' => $document->id,
 				'reference' => $document->reference,
 			],
-			status: $isCompleted ? Response::HTTP_OK : Response::HTTP_ACCEPTED);
+			httpStatus: $isCompleted ? Response::HTTP_OK : Response::HTTP_ACCEPTED);
 	}
 
 	public function download(Document $document)

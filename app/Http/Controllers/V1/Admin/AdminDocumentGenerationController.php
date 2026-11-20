@@ -19,10 +19,12 @@ class AdminDocumentGenerationController extends Controller
 	{
 	}
 
-	public function store( DocumentGenerationRequest $request,Application $application,)
+	/**
+	 * @throws \Throwable
+	 */
+	public function store(DocumentGenerationRequest $request, Application $application)
 	{
-		$validated = $request->validated();
-		$document = $this->service->generate($application, $validated);
+		$document = $this->service->generate($application, $request->validated());
 		$isCompleted = $document->status === DocumentStatus::COMPLETED;
 
 		return response()->success(

@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApplicationTemplateController extends Controller
+class TemplateController extends Controller
 {
 	public function index(AppContext $context)
 	{
