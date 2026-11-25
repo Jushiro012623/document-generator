@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Context\AppContext;
 use App\Models\Application;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

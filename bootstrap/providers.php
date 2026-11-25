@@ -6,4 +6,5 @@ return [
 	AppServiceProvider::class,
 	App\Providers\ResponseMacroServiceProvider::class,
 	App\Providers\AuthServiceProvider::class,
+	App\Providers\JwtServiceProvider::class,
 ];

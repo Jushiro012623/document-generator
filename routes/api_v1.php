@@ -31,7 +31,7 @@ Route::prefix('admin')->group(function () {
 		Route::prefix('templates/{template}')->group(function () {
 			Route::apiResource('versions', ApplicationTemplateVersionController::class)
 				->except('destroy')
-				->name('application-template-version');
+				->names('application-template-version');
 
 			Route::post('versions/{version}/publish', [ApplicationTemplateVersionController::class, 'publish'])
 				->name('application-template-version.publish');
@@ -65,6 +65,6 @@ Route::middleware('application.auth')->group(function () {
 	});
 
 	Route::post('documents/generate', [DocumentGenerationController::class, 'store']);
-	
+
 	Route::post('documents/{document}/download', [DocumentGenerationController::class, 'download']);
 });
