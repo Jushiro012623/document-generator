@@ -16,9 +16,16 @@ use Illuminate\Support\Facades\Route;
  * ADMIN ROUTES
  */
 Route::prefix('admin')->group(function () {
-	Route::post('login', [AuthenticationController::class, 'login'])->name('authentication.login');
+
+	Route::controller(AuthenticationController::class)->group(function () {
+		Route::post('login', 'login')->name('authentication.login');
+		Route::middleware('jwt.auth')->group(function () {
+			Route::post('logout', 'logout')->name('authentication.logout');
+		});
+	});
 
 	Route::middleware('jwt.auth')->group(function () {
+
 		Route::apiResource('applications', ApplicationController::class)->names('application');
 
 		Route::prefix('applications/{application}')->group(function () {

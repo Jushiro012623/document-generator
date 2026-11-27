@@ -41,4 +41,10 @@ class AuthenticationController extends Controller
 			'user' => $user->toResource()
 		]);
 	}
+
+	public function logout(Request $request)
+	{
+		$this->jwtService->revoke($request->bearerToken());
+		return response()->noContent();
+	}
 }

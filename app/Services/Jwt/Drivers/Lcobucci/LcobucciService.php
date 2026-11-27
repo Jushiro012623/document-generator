@@ -3,18 +3,20 @@
 namespace App\Services\Jwt\Drivers\Lcobucci;
 
 use App\Services\Jwt\Contracts\JwtDriverInterface;
+use App\Services\Jwt\Contracts\RevocableJwtDriverInterface;
 use App\Services\Jwt\Drivers\Lcobucci\Constraints\ValidationConstraints;
 use App\Services\Jwt\JwtPayload;
 use Carbon\CarbonImmutable;
 use DateInvalidTimeZoneException;
 use DateMalformedIntervalStringException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 
-final readonly class LcobucciService implements JwtDriverInterface
+final readonly class LcobucciService implements JwtDriverInterface, RevocableJwtDriverInterface
 {
 	public function __construct(private Configuration $configuration)
 	{
@@ -55,6 +57,19 @@ final readonly class LcobucciService implements JwtDriverInterface
 			tokenId: $parsedToken->claims()->get('jti'),
 			expiresAt: CarbonImmutable::parse($parsedToken->claims()->get('exp')),
 		);
+	}
+
+	public function revoke(JwtPayload $payload): void
+	{
+		if (!config('jwt.blacklist_enabled')) {
+			return;
+		}
+
+		$ttl = now()->diffInSeconds($payload->expiresAt);
+
+		if ($ttl > 0) {
+			Cache::put("blacklisted_tokens:{$payload->tokenId}", true, $ttl);
+		}
 	}
 
 	/**

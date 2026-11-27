@@ -23,6 +23,7 @@ class JwtAuthMiddleware
 
 		$sub = $plainToken->get('sub');
 
+
 		if (!$user = User::find($sub)) {
 			throw new AuthenticationException('Unable to authenticate the request.');
 		}

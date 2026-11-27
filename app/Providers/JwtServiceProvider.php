@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Services\Jwt\Contracts\JwtDriverInterface;
 use Illuminate\Support\ServiceProvider;
 use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use InvalidArgumentException;
 
@@ -24,7 +23,7 @@ class JwtServiceProvider extends ServiceProvider
 		if ($driver === 'lcobucci') {
 			$this->app->singleton(Configuration::class, function () {
 				return Configuration::forSymmetricSigner(
-					signer: new Sha256(),
+					signer: config('jwt.signer'),
 					key: InMemory::base64Encoded(config('jwt.secret'))
 				);
 			});
