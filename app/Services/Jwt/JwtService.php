@@ -10,9 +10,9 @@ final readonly class JwtService
 	{
 	}
 
-	public function issue(int|string $userId, array $claims = []): string
+	public function issue(int|string $userId, int $tokenVersion, array $claims = []): string
 	{
-		return $this->driver->issue($userId, array_merge(['type' => 'access'], $claims));
+		return $this->driver->issue($userId, $tokenVersion, array_merge(['type' => 'access'], $claims));
 	}
 
 	public function verify(string $token): JwtPayload

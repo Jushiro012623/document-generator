@@ -11,8 +11,6 @@ return [
 
 	'ttl' => env('JWT_TTL', 60),
 
-	'version' => env("JWT_VERSION", 'v1'),
-
 	'drivers' => [
 		'lcobucci' => LcobucciService::class,
 	],
@@ -25,6 +23,7 @@ return [
 		'nbf',
 		'sub',
 		'jti',
+		'token_version'
 	],
 
 	'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),

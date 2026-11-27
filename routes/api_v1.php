@@ -6,6 +6,7 @@ use App\Http\Controllers\V1\Admin\ApplicationCredentialsController;
 use App\Http\Controllers\V1\Admin\ApplicationPermissionsController;
 use App\Http\Controllers\V1\Admin\ApplicationTemplateController;
 use App\Http\Controllers\V1\Admin\ApplicationTemplateVersionController;
+use App\Http\Controllers\V1\Admin\AuthenticationController;
 use App\Http\Controllers\V1\User\DocumentGenerationController;
 use App\Http\Controllers\V1\User\TemplateController;
 use Illuminate\Support\Facades\Route;
@@ -15,36 +16,40 @@ use Illuminate\Support\Facades\Route;
  * ADMIN ROUTES
  */
 Route::prefix('admin')->group(function () {
-	Route::apiResource('applications', ApplicationController::class)->names('application');
+	Route::post('login', [AuthenticationController::class, 'login'])->name('authentication.login');
 
-	Route::prefix('applications/{application}')->group(function () {
+	Route::middleware('jwt.auth')->group(function () {
+		Route::apiResource('applications', ApplicationController::class)->names('application');
 
-		Route::apiResource('credentials', ApplicationCredentialsController::class)
-			->names('application-credential');
+		Route::prefix('applications/{application}')->group(function () {
 
-		Route::apiResource('permissions', ApplicationPermissionsController::class)
-			->names('application-permission');
+			Route::apiResource('credentials', ApplicationCredentialsController::class)
+				->names('application-credential');
 
-		Route::apiResource('templates', ApplicationTemplateController::class)
-			->names('application-template');
+			Route::apiResource('permissions', ApplicationPermissionsController::class)
+				->names('application-permission');
 
-		Route::prefix('templates/{template}')->group(function () {
-			Route::apiResource('versions', ApplicationTemplateVersionController::class)
-				->except('destroy')
-				->names('application-template-version');
+			Route::apiResource('templates', ApplicationTemplateController::class)
+				->names('application-template');
 
-			Route::post('versions/{version}/publish', [ApplicationTemplateVersionController::class, 'publish'])
-				->name('application-template-version.publish');
+			Route::prefix('templates/{template}')->group(function () {
+				Route::apiResource('versions', ApplicationTemplateVersionController::class)
+					->except('destroy')
+					->names('application-template-version');
 
-			Route::post('versions/{version}/archive', [ApplicationTemplateVersionController::class, 'archive'])
-				->name('application-template-version.archive');
+				Route::post('versions/{version}/publish', [ApplicationTemplateVersionController::class, 'publish'])
+					->name('application-template-version.publish');
+
+				Route::post('versions/{version}/archive', [ApplicationTemplateVersionController::class, 'archive'])
+					->name('application-template-version.archive');
+			});
+
+			Route::post('documents/generate', [AdminDocumentGenerationController::class, 'store'])
+				->name('application-document.generate');
+
+			Route::post('documents/{document}/download', [AdminDocumentGenerationController::class, 'download'])
+				->name('application-document.download');
 		});
-
-		Route::post('documents/generate', [AdminDocumentGenerationController::class, 'store'])
-			->name('application-document.generate');
-
-		Route::post('documents/{document}/download', [AdminDocumentGenerationController::class, 'download'])
-			->name('application-document.download');
 	});
 });
 

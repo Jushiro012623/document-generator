@@ -18,17 +18,18 @@ class ValidationConstraints
 	 * @throws \DateInvalidTimeZoneException
 	 * @throws \DateMalformedIntervalStringException
 	 */
-	public static function make(Configuration $config, Token $token): array
+	public static function make(Configuration $config): array
 	{
 		$clock = new SystemClock(new DateTimeZone(config('app.timezone')));
 		$leeway = new DateInterval('PT' . config('jwt.leeway') . 'S');
 
 		return [
-			new TokenNotRevoked(),
+			new SignedWith($config->signer(), $config->signingKey()),
+			new HasRequiredClaims(config('jwt.required_claims')),
 			new IssuedBy(config('app.url')),
 			new PermittedFor(config('app.url')),
-			new SignedWith($config->signer(), $config->signingKey()),
-			new StrictValidAt($clock, $leeway)
+			new StrictValidAt($clock, $leeway),
+			new TokenNotRevoked(),
 		];
 	}
 }

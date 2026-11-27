@@ -9,6 +9,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -18,19 +19,19 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Throwable;
-use function Pest\Laravel\instance;
 
 class ApiExceptionHandler
 {
 	public static function register(Exceptions $exceptions): void
 	{
-		self::registerReporting($exceptions);
-		self::registerRendering($exceptions);
+		$traceId = Str::uuid7()->toString();
+		self::registerReporting($exceptions, $traceId);
+		self::registerRendering($exceptions, $traceId);
 	}
 
-	private static function registerReporting(Exceptions $exceptions): void
+	private static function registerReporting(Exceptions $exceptions, string $traceId): void
 	{
-		$exceptions->report(function (Throwable $e): void {
+		$exceptions->report(function (Throwable $e) use ($traceId): void {
 			if (
 				$e instanceof ValidationException ||
 				$e instanceof AuthenticationException ||
@@ -45,7 +46,7 @@ class ApiExceptionHandler
 			}
 
 			Log::error('API Exception', [
-				'trace_id' => (string)str()->uuid(),
+				'trace_id' => $traceId,
 				'url' => request()->getRequestUri(),
 				'method' => request()->method(),
 				'status' => 500,
@@ -57,7 +58,7 @@ class ApiExceptionHandler
 		});
 	}
 
-	private static function registerRendering(Exceptions $exceptions): void
+	private static function registerRendering(Exceptions $exceptions, string $traceId): void
 	{
 		$exceptions->shouldRenderJsonWhen(
 			function (Request $request, Throwable $e): bool {
@@ -65,7 +66,7 @@ class ApiExceptionHandler
 			}
 		);
 
-		$exceptions->render(function (Throwable $e) {
+		$exceptions->render(function (Throwable $e) use ($traceId) {
 
 			if ($e instanceof ValidationException) {
 				$errors = [];
@@ -110,10 +111,7 @@ class ApiExceptionHandler
 				);
 			}
 
-			if (
-				$e instanceof AuthorizationException ||
-				$e instanceof AccessDeniedHttpException
-			) {
+			if ($e instanceof AuthorizationException || $e instanceof AccessDeniedHttpException) {
 				return response()->fail(
 					$e->getMessage() ?: 'You do not have permission to access this resource.',
 					[],
@@ -201,6 +199,7 @@ class ApiExceptionHandler
 				$debug['line'] = $e->getLine();
 			}
 
+			$debug['trace_id'] = $traceId;
 			return response()->fail(
 				'An unexpected error occurred while processing the request.',
 				$debug,

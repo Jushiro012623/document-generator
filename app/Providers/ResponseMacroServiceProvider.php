@@ -18,7 +18,13 @@ class ResponseMacroServiceProvider extends ServiceProvider
 
 	public function boot(): void
 	{
-		Response::macro('success', function (string $message = 'success', mixed $data = [], int $httpStatus = 200, array $additional = []): JsonResponse {
+		Response::macro('success', function (
+			string $message = 'success',
+			mixed $data = [],
+			int $httpStatus = 200,
+			array $additional = [],
+		): JsonResponse {
+
 			$paginator = null;
 
 			$httpStatus = $httpStatus >= 400 ? 200 : $httpStatus;

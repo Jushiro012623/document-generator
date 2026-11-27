@@ -25,9 +25,9 @@ final readonly class LcobucciService implements JwtDriverInterface
 		return $this->configuration;
 	}
 
-	public function issue(string $subject, array $claims = []): string
+	public function issue(string|int $subject, int $tokenVersion, array $claims = []): string
 	{
-		$token = $this->create($subject, $claims);
+		$token = $this->create($subject, [...$claims, 'token_version' => $tokenVersion,]);
 
 		return $token->toString();
 	}
@@ -41,7 +41,7 @@ final readonly class LcobucciService implements JwtDriverInterface
 	{
 		$parsedToken = $this->parse($token);
 
-		$validators = ValidationConstraints::make($this->config(), $parsedToken);
+		$validators = ValidationConstraints::make($this->configuration);
 
 		try {
 			$this->config()->validator()->assert($parsedToken, ...$validators);
@@ -53,7 +53,7 @@ final readonly class LcobucciService implements JwtDriverInterface
 			subject: $parsedToken->claims()->get('sub'),
 			claims: $parsedToken->claims()->all(),
 			tokenId: $parsedToken->claims()->get('jti'),
-			expiresAt: $parsedToken->claims()->get('exp'),
+			expiresAt: CarbonImmutable::parse($parsedToken->claims()->get('exp')),
 		);
 	}
 
@@ -79,6 +79,7 @@ final readonly class LcobucciService implements JwtDriverInterface
 		$now = CarbonImmutable::now();
 		$ttl = config('jwt.ttl');
 		$expiration = $now->modify("+{$ttl} minutes");
+
 		$tokenBuilder = $this->config()->builder()
 			->issuedBy(config('app.url'))
 			->permittedFor(config('app.url'))

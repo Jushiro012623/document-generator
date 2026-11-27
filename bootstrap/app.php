@@ -1,10 +1,12 @@
 <?php
 
 use App\Exceptions\ApiExceptionHandler;
-use App\Http\Middleware\AuthAppMiddleware;
+use App\Http\Middleware\AppAuthMiddleware;
+use App\Http\Middleware\JwtAuthMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,7 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 		$middleware->alias([
-			'application.auth' => AuthAppMiddleware::class,
+			'application.auth' => AppAuthMiddleware::class,
+			'jwt.auth' => JwtAuthMiddleware::class,
 		]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class AuthAppMiddleware
+class AppAuthMiddleware
 {
 	/**
 	 * @throws AuthenticationException
